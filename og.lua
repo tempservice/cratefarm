@@ -4,6 +4,7 @@ task.wait(3)
 
 local quene = ""
 local queued = false
+local CurrentlyCollecting = false
 
 local SetStatus = function(text)
 	game.StarterGui:SetCore("SendNotification", {
@@ -21,6 +22,7 @@ local ServerHop = function()
 		queued = true
 
 		quene = quene .. ' loadstring(game:HttpGet("https://dropfarms.xyz/og.lua",true))()'
+		
 		if syn then
 			syn.queue_on_teleport(quene)
 		else
@@ -55,6 +57,9 @@ local ServerHop = function()
 end
 
 local RobDrop = function(drop)
+	
+	CurrentlyCollecting = true
+	
 	local timeout = tick()
 
 	if drop then
@@ -79,11 +84,14 @@ local RobDrop = function(drop)
 		until drop == nil or drop.PrimaryPart == nil or tick() - timeout > 5
 
 		drop:Remove()
+		CurrentlyCollecting = false
+	else
+		CurrentlyCollecting = false
 	end
 end
 
 while wait() do
-	if game.Workspace:FindFirstChild("Drop") then
+	if game.Workspace:FindFirstChild("Drop") and CurrentlyCollecting == false then
 		pcall(RobDrop, game.Workspace.Drop)
 	else
 		ServerHop()
