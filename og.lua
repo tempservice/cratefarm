@@ -5,7 +5,18 @@ task.wait(3)
 local quene = ""
 local queued = false
 
+local SetStatus = function(text)
+	game.StarterGui:SetCore("SendNotification", {
+		Title = "Dropfarm 2019",
+		Text = text,
+		Duration = 1.2,
+	})
+end
+
 local ServerHop = function()
+	
+	SetStatus("Server hopping...")
+	
 	if queued == false then
 		queued = true
 
@@ -18,7 +29,7 @@ local ServerHop = function()
 	end
 	
 	while true do
-		local Servers = "https://games.roblox.com/v1/games/17190408132/servers/Public?sortOrder=Asc&limit=100"
+		local Servers = "https://games.roblox.com/v1/games/".. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
 		local Server, Next = nil, nil
 
 		local function ListServers(cursor)
@@ -35,7 +46,7 @@ local ServerHop = function()
 
 		if Server.playing < Server.maxPlayers and Server.id ~= game.JobId then
 			pcall(function()
-				game:GetService("TeleportService"):TeleportToPlaceInstance(17190408132, Server.id, game.Players.LocalPlayer)
+				game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, Server.id, game.Players.LocalPlayer)
 			end)
 		end
 
@@ -47,7 +58,9 @@ local RobDrop = function(drop)
 	local timeout = tick()
 
 	if drop then
-
+		
+		SetStatus("Collecting drop...")
+		
 		task.spawn(function()
 			while drop do
 				wait()
