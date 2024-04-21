@@ -2,51 +2,45 @@ repeat task.wait(1) until game:IsLoaded()
 
 task.wait(3)
 
-local queue = ""
+local quene = ""
 local queued = false
-
-local HttpService = game:GetService("HttpService")
-local TeleportService = game:GetService("TeleportService")
-
-local Player = game:GetService("Players").LocalPlayer
 
 local ServerHop = function()
 	if queued == false then
 		queued = true
 
-		queue = queue .. 'loadstring(game:HttpGet("https://dropfarms.xyz/og.lua"))()'
-
+		quene = quene .. ' loadstring(game:HttpGet("https://dropfarms.xyz/og.lua",true))()'
 		if syn then
-			syn.queue_on_teleport(queue)
+			syn.queue_on_teleport(quene)
 		else
-			queue_on_teleport(queue)
+			queue_on_teleport(quene)
 		end
 	end
+end
 
-	while true do
-		local Servers = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
-		local Server, Next = nil, nil
+while true do
+	local Servers = "https://games.roblox.com/v1/games/17190408132/servers/Public?sortOrder=Asc&limit=100"
+	local Server, Next = nil, nil
 
-		local function ListServers(cursor)
-			local Raw = game:HttpGet(Servers .. ((cursor and "&cursor="..cursor) or ""))
+	local function ListServers(cursor)
+		local Raw = game:HttpGet(Servers .. ((cursor and "&cursor="..cursor) or ""))
 
-			return HttpService:JSONDecode(Raw)
-		end
-
-		repeat
-			local Servers = ListServers(Next)
-			Server = Servers.data[math.random(1, (#Servers.data / 3))]
-			Next = Servers.nextPageCursor
-		until Server
-
-		if Server.playing < Server.maxPlayers and Server.id ~= game.JobId then
-			pcall(function()
-				TeleportService:TeleportToPlaceInstance(game.PlaceId, Server.id, Player)
-			end)
-		end
-
-		task.wait(10)
+		return game:GetService("HttpService"):JSONDecode(Raw)
 	end
+
+	repeat
+		local Servers = ListServers(Next)
+		Server = Servers.data[math.random(1, (#Servers.data / 3))]
+		Next = Servers.nextPageCursor
+	until Server
+
+	if Server.playing < Server.maxPlayers and Server.id ~= game.JobId then
+		pcall(function()
+			game:GetService("TeleportService"):TeleportToPlaceInstance(17190408132, Server.id, game.Players.LocalPlayer)
+		end)
+	end
+
+	task.wait(10)
 end
 
 local RobDrop = function(drop)
